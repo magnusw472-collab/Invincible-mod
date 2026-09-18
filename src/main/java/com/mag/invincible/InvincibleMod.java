@@ -32,14 +32,14 @@ public class InvincibleMod implements ModInitializer {
      * Non-player sources (console/command blocks) are allowed, matching the old
      * "level 2+" behavior for them.
      */
-    private static boolean isOperator(ServerCommandSource source) {
+private static boolean isOperator(ServerCommandSource source) {
         ServerPlayerEntity player = source.getPlayer();
         if (player == null) {
             return true;
         }
-        return source.getServer().getPlayerManager().isOperator(player.getGameProfile());
+        return source.getServer().getPlayerManager()
+                .isOperator(new net.minecraft.server.PlayerConfigEntry(player.getGameProfile()));
     }
-
     private static void toggle(ServerPlayerEntity target, ServerPlayerEntity invoker) {
         UUID id = target.getUuid();
         boolean nowEnabled;
