@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "invincible",
+  "version": "${version}",
+  "name": "Invincible (Last Stand)",
+  "description": "Toggleable Last Stand mode: normal damage and totems still work, but a lethal hit leaves you at half a heart instead of killing you.",
+  "authors": [
+    "Mag"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.mag.invincible.InvincibleMod"
+    ]
+  },
+  "mixins": [
+    "invincible.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "1.21.11",
+    "fabric-api": "*",
+    "java": ">=21"
+  }
+}
