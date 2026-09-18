@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 
-    @Inject(method = "die", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onDeath", at = @At("HEAD"), cancellable = true)
     private void invincible$preventDeath(DamageSource source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
 
