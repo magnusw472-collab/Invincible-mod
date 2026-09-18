@@ -23,6 +23,23 @@ public class InvincibleMod implements ModInitializer {
         return LAST_STAND_PLAYERS.contains(player.getUuid());
     }
 
+    /**
+     * 1.21.11 replaced the old int-level ServerCommandSource#hasPermissionLevel(int)
+     * check with a new Permission/PermissionPredicate system. Rather than depend on
+     * that brand-new, still-shifting API, this checks operator status directly via
+     * PlayerManager#isOperator(GameProfile) - the underlying ops.json check that has
+     * been stable across every Minecraft version and isn't part of that rewrite.
+     * Non-player sources (console/command blocks) are allowed, matching the old
+     * "level 2+" behavior for them.
+     */
+    private static boolean isOperator(ServerCommandSource source) {
+        ServerPlayerEntity player = source.getPlayer();
+        if (player == null) {
+            return true;
+        }
+        return source.getServer().getPlayerManager().isOperator(player.getGameProfile());
+    }
+
     private static void toggle(ServerPlayerEntity target, ServerPlayerEntity invoker) {
         UUID id = target.getUuid();
         boolean nowEnabled;
@@ -57,14 +74,14 @@ public class InvincibleMod implements ModInitializer {
 
             LiteralCommandNode<ServerCommandSource> invincibleNode = dispatcher.register(
                     CommandManager.literal("invincible")
-                            .requires(source -> source.hasPermissionLevel(2))
+                            .requires(InvincibleMod::isOperator)
                             .executes(context -> {
                                 ServerPlayerEntity self = context.getSource().getPlayerOrThrow();
                                 toggle(self, self);
                                 return 1;
                             })
                             .then(CommandManager.argument("player", EntityArgumentType.player())
-                                    .requires(source -> source.hasPermissionLevel(2))
+                                    .requires(InvincibleMod::isOperator)
                                     .executes(context -> {
                                         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
                                         ServerPlayerEntity invoker = context.getSource().getPlayer();
@@ -76,7 +93,7 @@ public class InvincibleMod implements ModInitializer {
             // /god as a plain alias for /invincible
             dispatcher.register(
                     CommandManager.literal("god")
-                            .requires(source -> source.hasPermissionLevel(2))
+                            .requires(InvincibleMod::isOperator)
                             .redirect(invincibleNode)
             );
         });
